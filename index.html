@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maafin Aku, Ziah ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14112e;--panel:#241f4d;--line:#fff;--ink:#fff;--pink:#ff7eb3;--yel:#ffd84a;--blue:#4aa3ff;--grn:#6be58a;--dim:#b9b4e6;
+--f:'Press Start 2P',ui-monospace,Menlo,Consolas,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:10px;line-height:1.8;color-scheme:dark;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 0,#2b2470,var(--bg) 60%) fixed;display:flex;justify-content:center}
+#app{width:100%;max-width:420px;min-height:100vh;padding:14px}
+.screen{display:none;flex-direction:column;align-items:center;gap:14px;text-align:center;animation:pop .35s steps(4)}
+.screen.on{display:flex}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+h1{font-size:18px;line-height:1.5;margin:6px 0;color:var(--yel);text-shadow:3px 3px 0 #b3447a}
+h2{font-size:12px;color:var(--yel);margin:4px 0}
+p{margin:0}
+.box{background:var(--panel);border:4px solid var(--line);box-shadow:6px 6px 0 #000;padding:14px;width:100%}
+canvas{image-rendering:pixelated}
+.btn{font:inherit;font-size:11px;color:#14112e;background:var(--yel);border:4px solid #fff;box-shadow:4px 4px 0 #000;padding:12px 16px;cursor:pointer;touch-action:manipulation;transition:transform .1s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #000}
+.btn.pink{background:var(--pink)}.btn.blue{background:var(--blue)}
+.hud{display:flex;justify-content:space-between;width:100%;font-size:10px}
+#cv{width:100%;max-width:360px;border:4px solid #fff;box-shadow:6px 6px 0 #000;touch-action:none;background:#1b1740}
+.pad{display:flex;gap:12px;width:100%;justify-content:center}.pad .btn{flex:1;max-width:150px;font-size:16px}
+.stage{display:flex;gap:18px;align-items:flex-end;justify-content:center}
+.bounce{animation:bn 1s steps(2) infinite}.bounce.d{animation-delay:.5s}
+@keyframes bn{50%{transform:translateY(-8px)}}
+.bar{width:100%;height:18px;border:4px solid #fff;background:#000;position:relative}
+.bar i{display:block;height:100%;width:0;background:var(--pink);transition:width .4s steps(6)}
+.opts{display:flex;flex-direction:column;gap:10px;width:100%}
+.opts .btn{text-align:left;line-height:1.6;font-size:10px;background:#fff}
+.opts .btn.bad{background:#ff6b6b;animation:sh .3s steps(3)}.opts .btn.ok{background:var(--grn)}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.say{min-height:70px;text-align:left}
+.letter{background:#fff8e1;color:#3a2a1a;border:4px solid #fff;box-shadow:6px 6px 0 #000;padding:16px;text-align:left;min-height:230px;width:100%;font-size:10px;line-height:2}
+.final-btns{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;min-height:90px;width:100%}
+#yes{transition:transform .2s steps(4)}#no{transition:transform .15s steps(3)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#000;border:3px solid var(--pink);padding:10px 14px;display:none;z-index:9;max-width:92%;text-align:center}
+.fx{position:fixed;top:-20px;color:var(--pink);pointer-events:none;animation:fall linear forwards;z-index:8}
+@keyframes fall{to{transform:translateY(110vh) rotate(180deg)}}
+textarea{font:inherit;font-size:10px;width:100%;min-height:80px;padding:10px;background:#fff8e1;color:#3a2a1a;border:4px solid #fff;box-shadow:4px 4px 0 #000;resize:vertical}
+a.btn{text-decoration:none;display:inline-block}
+small{color:var(--dim);font-size:8px;line-height:1.8}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- 1. TITLE -->
+<section class="screen on" id="s-title">
+  <small>— PIXEL QUEST —</small>
+  <h1>MAAFIN AKU,<br>ZIAH ♥</h1>
+  <div class="stage"><span id="t-boy" class="bounce"></span><span id="t-ziah" class="bounce d"></span></div>
+  <div class="box"><p>Untuk: <b style="color:var(--pink)">Ziah Indah Lestari</b></p><p style="margin-top:8px">3 level kecil buat minta maaf. Selesaikan sampai akhir ya!</p></div>
+  <button class="btn" id="b-start">▶ MULAI</button>
+  <small>Level 1: Tangkap Hati · Level 2: Dengerin Ziah · Level 3: Surat</small>
+</section>
+
+<!-- 2. LEVEL 1 -->
+<section class="screen" id="s-game">
+  <h2>LEVEL 1 · TANGKAP HATI</h2>
+  <div class="hud"><span>♥ <b id="h-score">0</b>/10</span><span id="h-lives">❤❤❤</span></div>
+  <canvas id="cv" width="240" height="320"></canvas>
+  <div class="pad"><button class="btn blue" id="b-l">◀</button><button class="btn blue" id="b-r">▶</button></div>
+  <small>Geser jari di layar / tombol / panah keyboard. Hindari awan marah!</small>
+</section>
+
+<!-- 3. LEVEL 2 -->
+<section class="screen" id="s-quiz">
+  <h2>LEVEL 2 · DENGERIN ZIAH</h2>
+  <div class="bar"><i id="mood"></i></div><small>Mood Ziah</small>
+  <div class="stage"><span id="q-ziah" class="bounce"></span></div>
+  <div class="box say" id="q-say"></div>
+  <div class="opts" id="q-opts"></div>
+</section>
+
+<!-- 4. LEVEL 3 -->
+<section class="screen" id="s-final">
+  <h2>LEVEL 3 · SURAT UNTUKMU</h2>
+  <div class="letter" id="letter"></div>
+  <div class="final-btns" id="fin" style="display:none">
+    <button class="btn pink" id="yes">MAAFIN ♥</button>
+    <button class="btn" id="no">Nggak mau</button>
+  </div>
+</section>
+
+<!-- 5. ENDING -->
+<section class="screen" id="s-end">
+  <h1>YAAAY!<br>♥ ♥ ♥</h1>
+  <div class="stage"><span id="e-boy" class="bounce"></span><span id="e-ziah" class="bounce d"></span></div>
+  <div class="box"><p><b style="color:var(--pink)">Ziah Indah Lestari</b> memaafkan aku!</p><p style="margin-top:10px">Terima kasih ya sayang. Aku bakal jaga kepercayaan kamu. Janji.</p></div>
+  <textarea id="reply" placeholder="Tulis pesan buat dia di sini (opsional)..."></textarea>
+  <a class="btn pink" id="b-wa" target="_blank" rel="noopener" href="#">💬 KIRIM HASIL KE WA</a>
+  <small>Tombol ini membuka WhatsApp dengan pesan siap kirim. Tinggal tekan kirim ya, Ziah!</small>
+  <button class="btn blue" id="b-again">↺ MAIN LAGI</button>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ KONFIGURASI (edit di sini) ============ */
+const CONFIG = {
+  from: "Daffa",
+  to: "Ziah Indah Lestari",
+  wa: "6287788369895", /* nomor WA tujuan, format internasional tanpa + */
+  letter: [
+    "Hai, Ziah Indah Lestari...",
+    "Aku tahu aku udah bikin kamu sedih dan kecewa.",
+    "Aku nggak mau cari-cari alasan. Aku salah, dan aku menyesal banget.",
+    "Makasih udah sabar sama aku selama ini.",
+    "Aku janji bakal lebih peka, lebih jujur, dan lebih mau dengerin kamu.",
+    "Kamu orang yang paling berharga buat aku.",
+    "Jadi... maafin aku ya?"
+  ],
+  quiz: [
+    {q:"Kamu tahu nggak kenapa aku kesal?", o:[["Nggak tahu, tapi aku mau dengerin kamu.",1],["Pasti karena hal kecil kan?",0],["Kamu kan emang sensitif.",0]]},
+    {q:"Terus, kamu mau ngapain sekarang?", o:[["Dengerin dulu sampai selesai, nggak nyela.",1],["Kasih alasan panjang lebar.",0],["Ngilang dulu biar adem.",0]]},
+    {q:"Janji apa buat ke depannya?", o:[["Lebih jujur dan lebih peka sama kamu.",1],["Janji manis aja, yang penting kamu senang.",0],["Beliin bubble tea (doang).",0]]}
+  ],
+  wrong: ["Hmm... bukan itu deh jawabannya.","Ziah cemberut. Coba lagi ya!","Aduh, itu bikin makin kesal!"],
+  noTexts: ["Nggak mau","Yakin?","Beneran?","Please...","Sekali ini aja","Pikir lagi deh"]
+};
+
+/* ============ UTIL ============ */
+const $ = s => document.querySelector(s);
+const show = id => document.querySelectorAll('.screen').forEach(e => e.classList.toggle('on', e.id === id));
+const toast = (t, ms=1800) => { const e=$('#toast'); e.textContent=t; e.style.display='block'; clearTimeout(toast.t); toast.t=setTimeout(()=>e.style.display='none',ms); };
+const beep = (f, d=.08) => { try{ const a=beep.a||(beep.a=new (window.AudioContext||window.webkitAudioContext)()); const o=a.createOscillator(),v=a.createGain(); o.type='square'; o.frequency.value=f; v.gain.value=.04; o.connect(v); v.connect(a.destination); o.start(); o.stop(a.currentTime+d);}catch(e){} };
+
+/* ============ SPRITE PIXEL ART ============ */
+const PAL = {k:'#2b2540',s:'#ffd9b0',h:'#4a2e1f',b:'#4aa3ff',r:'#ff8fa3',m:'#5a3825',p:'#ff7eb3',w:'#ffffff',d:'#8d8aa8',y:'#ffd84a',t:'#7fd4ff',g:'#2d3fa0',j:'#b9a7ff'};
+const BOY = [
+"...kkkkkk...","..khhhhhhk..",".khhhhhhhhk.",".khssssssshk".slice(0,0)+".khsssssshk.",".ksskssksssk",".ksrsssssrsk","..ksskkssk..","...kksskk...","..kbbbbbbk..",".kbbbbbbbbk.",".kbbbbbbbbk.","..kkk..kkk.."];
+BOY[3]=".khggssgghk."; BOY[4]=".ksgkggkgsk."; BOY[5]=".ksggssggsk."; BOY[6]="..ksskkssk.."; /* kacamata */
+const BOY_SAD = BOY.map((r,i)=> i==6 ? "..kssskkssk.".slice(0,12) : i==5 ? ".ktggssggtk." : r);
+const BOY_HAPPY = BOY.map((r,i)=> i==6 ? ".ksskkkkssk." : r);
+const ZIAH = [
+"...kkkkkk...","..kmmmmmppk.",".kmmmmmmmmk.",".kmssssssmk.",".kmskssksmk.",".kmsrsssrsmk",".kmssskkssmk".slice(0,12),".kmmssssmmk.",".kmppppppmk.","..kppppppk..",".kppppppppk.","..kkk..kkk.."];
+/* hijab + pita pink */
+ZIAH.splice(1,11,"..kjjjjjppk.",".kjjjjjjjjk.",".kjjssssjjk.",".kjskssksjk.",".kjsrsssrjk.",".kjsskkssjk.",".kjjjssjjjk.",".kjjjjjjjjk.",".kjppppppjk.",".kppppppppk.","..kkk..kkk..");
+const ZIAH_MAD = ZIAH.map((r,i)=> i==6 ? ".kjskkkkkjk." : r);
+const ZIAH_HAPPY = ZIAH.map((r,i)=> i==5 ? ".kjrrssrrjk." : r);
+const HEART = [".rr.rr.","rwrrrrr","rrrrrrr",".rrrrr.","..rrr..","...r..."];
+const CLOUD = ["..ddddd..",".ddddddd.","ddkdddkdd",".ddddddd.","..t.t.t.."];
+const STAR = ["y"];
+
+function spr(ctx, rows, x, y, sc){
+  rows.forEach((row,j)=>[...row].forEach((c,i)=>{ if(c!=='.'&&PAL[c]){ ctx.fillStyle=PAL[c]; ctx.fillRect(x+i*sc,y+j*sc,sc,sc);} }));
+}
+function icon(rows, sc){
+  const c=document.createElement('canvas'); c.width=rows[0].length*sc; c.height=rows.length*sc; c.style.imageRendering='pixelated';
+  spr(c.getContext('2d'),rows,0,0,sc); return c;
+}
+const put = (sel, rows, sc) => { const e=$(sel); e.innerHTML=''; e.appendChild(icon(rows,sc)); };
+
+/* ============ LEVEL 0: TITLE ============ */
+put('#t-boy', BOY_SAD, 8); put('#t-ziah', ZIAH_MAD, 8);
+$('#b-start').onclick = () => { beep(660); show('s-game'); startGame(); };
+
+/* ============ LEVEL 1: TANGKAP HATI ============ */
+const STAT = {kalah:0, salah:0, nggak:0};
+let raf;
+function startGame(){
+  cancelAnimationFrame(raf);
+  const cv=$('#cv'), g=cv.getContext('2d'), W=240, H=320, GROUND=296, PS=3;
+  const pw=12*PS, ph=12*PS;
+  let px=W/2-pw/2, tx=px, items=[], score=0, lives=3, f=0, dir=0, done=false, hurt=0;
+  const stars=Array.from({length:26},()=>({x:Math.random()*W|0,y:Math.random()*240|0,o:Math.random()*100|0}));
+  const hud=()=>{ $('#h-score').textContent=score; $('#h-lives').textContent='❤'.repeat(lives)+'♡'.repeat(3-lives); };
+  hud();
+
+  const move = e => { const r=cv.getBoundingClientRect(); tx=(e.clientX-r.left)/r.width*W-pw/2; };
+  cv.onpointerdown = cv.onpointermove = move;
+  const hold=(id,d)=>{ const b=$(id); b.onpointerdown=()=>dir=d; b.onpointerup=b.onpointerleave=()=>dir=0; };
+  hold('#b-l',-1); hold('#b-r',1);
+  document.onkeydown = e => { if(e.key==='ArrowLeft')dir=-1; if(e.key==='ArrowRight')dir=1; };
+  document.onkeyup = () => dir=0;
+
+  function loop(){
+    f++;
+    if(dir){ tx+=dir*4; }
+    tx=Math.max(0,Math.min(W-pw,tx)); px+=(tx-px)*.35;
+
+    if(f%Math.max(22,46-score*2)===0){
+      const bad=Math.random()<.3;
+      items.push({x:8+Math.random()*(W-34),y:-14,bad,v:1.3+Math.random()*.8+score*.12});
+    }
+    items.forEach(it=>it.y+=it.v);
+    items=items.filter(it=>{
+      const w=it.bad?18:14, h=it.bad?10:12, py=GROUND-ph;
+      if(it.x<px+pw-4 && it.x+w>px+4 && it.y+h>py+6 && it.y<py+ph){
+        if(it.bad){ lives--; hurt=14; beep(120,.2); hud(); } else { score++; beep(880+score*40); hud(); }
+        return false;
+      }
+      return it.y<H;
+    });
+    if(lives<=0){ STAT.kalah++; toast('Ziah masih kesal... coba lagi ya! ♥'); lives=3; score=0; items=[]; hud(); }
+    if(score>=10 && !done){ done=true; beep(1100,.3); toast('Level 1 selesai! ♥'); setTimeout(()=>{cancelAnimationFrame(raf);document.onkeydown=document.onkeyup=null;startQuiz();},900); }
+
+    // draw
+    g.fillStyle='#1b1740'; g.fillRect(0,0,W,H);
+    g.fillStyle='#2a2260'; g.fillRect(0,200,W,GROUND-200);
+    stars.forEach(s=>{ g.fillStyle=((f+s.o)%80<40)?'#fff':'#8d8aa8'; g.fillRect(s.x,s.y,2,2); });
+    g.fillStyle='#ffe9a8'; g.fillRect(190,24,22,22); g.fillStyle='#1b1740'; g.fillRect(200,22,16,18);
+    for(let x=0;x<W;x+=8){ g.fillStyle=(x/8)%2?'#4fbf6a':'#3fae5a'; g.fillRect(x,GROUND,8,6); g.fillStyle='#6b4a2f'; g.fillRect(x,GROUND+6,8,H-GROUND); }
+    items.forEach(it=> it.bad ? spr(g,CLOUD,it.x,it.y,2) : spr(g,HEART,it.x,it.y,2));
+    const bob=(f%20<10)?0:1;
+    if(hurt>0){ hurt--; if(hurt%4<2){ raf=requestAnimationFrame(loop); return; } }
+    spr(g, hurt>0?BOY_SAD:(score>=5?BOY_HAPPY:BOY), px, GROUND-ph+bob, PS);
+    raf=requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* ============ LEVEL 2: DENGERIN ZIAH ============ */
+let qi=0;
+function startQuiz(){ qi=0; $('#mood').style.width='0'; show('s-quiz'); renderQ(); }
+function renderQ(){
+  const q=CONFIG.quiz[qi];
+  put('#q-ziah', ZIAH_MAD, 8);
+  $('#q-say').innerHTML='<small style="color:var(--pink)">Ziah:</small><br>'+q.q;
+  const box=$('#q-opts'); box.innerHTML='';
+  q.o.forEach(([t,ok])=>{
+    const b=document.createElement('button'); b.className='btn'; b.textContent=t;
+    b.onclick=()=>{
+      if(ok){
+        b.classList.add('ok'); beep(990,.15); qi++;
+        $('#mood').style.width=(qi/CONFIG.quiz.length*100)+'%';
+        put('#q-ziah', ZIAH, 8);
+        $('#q-say').innerHTML='<small style="color:var(--pink)">Ziah:</small><br>'+(qi<CONFIG.quiz.length?'Hmm... oke, lanjut.':'Ziah mulai luluh... ♥');
+        box.querySelectorAll('button').forEach(x=>x.disabled=true);
+        setTimeout(()=>{ qi<CONFIG.quiz.length ? renderQ() : startFinal(); }, 1100);
+      } else {
+        STAT.salah++; b.classList.add('bad'); beep(140,.2);
+        $('#q-say').innerHTML='<small style="color:var(--pink)">Ziah:</small><br>'+CONFIG.wrong[Math.random()*CONFIG.wrong.length|0];
+        setTimeout(()=>b.classList.remove('bad'),400);
+      }
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ============ LEVEL 3: SURAT ============ */
+function startFinal(){
+  show('s-final');
+  const L=$('#letter'), fin=$('#fin'); L.innerHTML=''; fin.style.display='none';
+  const lines=[...CONFIG.letter, '— '+CONFIG.from+' ♥'];
+  let li=0, ci=0, p=document.createElement('p');
+  p.style.margin='0 0 10px'; L.appendChild(p);
+  (function type(){
+    if(li>=lines.length){ fin.style.display='flex'; setupFinal(); return; }
+    p.textContent=lines[li].slice(0,++ci);
+    if(ci%3===0) beep(500,.03);
+    if(ci>=lines[li].length){ li++; ci=0; p=document.createElement('p'); p.style.margin='0 0 10px'; L.appendChild(p); setTimeout(type,450); }
+    else setTimeout(type,28);
+  })();
+}
+function setupFinal(){
+  const yes=$('#yes'), no=$('#no'); let n=0;
+  yes.style.transform='none'; no.style.transform='none'; no.textContent=CONFIG.noTexts[0];
+  const dodge=e=>{
+    e.preventDefault(); n++; STAT.nggak++;
+    no.textContent=CONFIG.noTexts[n%CONFIG.noTexts.length];
+    no.style.transform=`translate(${(Math.random()*120-60)|0}px,${(Math.random()*60-30)|0}px)`;
+    yes.style.transform=`scale(${Math.min(1+n*.18,1.9)})`;
+    beep(200,.08);
+  };
+  no.onpointerenter=dodge; no.onclick=dodge;
+  yes.onclick=()=>{ beep(1200,.3); confetti(); buildWA(); put('#e-boy',BOY_HAPPY,8); put('#e-ziah',ZIAH_HAPPY,8); show('s-end'); };
+}
+function confetti(){
+  for(let i=0;i<40;i++){
+    const s=document.createElement('span'); s.className='fx'; s.textContent=['♥','★','♥','✦'][i%4];
+    s.style.left=Math.random()*100+'vw'; s.style.fontSize=(12+Math.random()*16|0)+'px';
+    s.style.animationDuration=(2+Math.random()*3)+'s'; s.style.animationDelay=(Math.random()*1.2)+'s';
+    s.style.color=['#ff7eb3','#ffd84a','#4aa3ff','#6be58a'][i%4];
+    document.body.appendChild(s); setTimeout(()=>s.remove(),6500);
+  }
+}
+/* ============ KIRIM HASIL KE WHATSAPP ============ */
+function buildWA(){
+  const pesan=$('#reply').value.trim();
+  const t=`Halo ${CONFIG.from}, ini ${CONFIG.to} ♥\nAku udah main game minta maafnya sampai selesai, dan aku MEMAAFKAN kamu.\n\nHasil:\n- Level 1: kalah ${STAT.kalah}x\n- Level 2: salah jawab ${STAT.salah}x\n- Percobaan klik "Nggak mau": ${STAT.nggak}x`+(pesan?`\n\nPesan dari aku:\n${pesan}`:'');
+  $('#b-wa').href='https://wa.me/'+CONFIG.wa+'?text='+encodeURIComponent(t);
+}
+$('#reply').oninput=buildWA;
+$('#b-wa').onclick=buildWA;
+$('#b-again').onclick=()=>{ STAT.kalah=STAT.salah=STAT.nggak=0; $('#reply').value=''; show('s-title'); };
+</script>
+</body>
+</html>
